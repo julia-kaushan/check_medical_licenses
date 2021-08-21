@@ -1,16 +1,37 @@
-# This is a sample Python script.
+import requests
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+api_url = 'https://data.mos.ru/api/rows/getresultwithcount'
 
+params = {
+    'datasetId': '1189',
+    'search': '',
+    'filters[0].Key': 'OGRN',
+    'filters[0].Value': '1077757418111',
+    'sortField': 'Number',
+    'sortOrder': 'ASC',
+    'versionNumber': '2',
+    'releaseNumber': '546'
+}
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+res = requests.get(api_url, params=params)
 
+result = res.json()
+count = result['Count']
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+org_information = {
+    'Название организации': result['Result'][0]['Cells']['LicenseHolderName'],
+    'ИНН организации': result['Result'][0]['Cells']['INN'],
+    'ОГРН организации': result['Result'][0]['Cells']['OGRN'],
+    'Адрес организации': result['Result'][0]['Cells']['Address']
+}
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+license_inf = []
+for i in range(count):
+    license_inf.append({'id': (i+1),
+                        'Номер лицензии': result['Result'][i]['Cells']['License'],
+                        'Дата выдачи лицензии': result['Result'][i]['Cells']['RegistrationDate'],
+                        'Вид деятельности': result['Result'][i]['Cells']['PermissionList']
+    })
+
+print(org_information, license_inf)
+
