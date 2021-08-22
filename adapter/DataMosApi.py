@@ -3,7 +3,7 @@ from models.MedicalOrg import MedicalOrg
 
 class DataMosApi:
 
-    API = 'https://data.mos.ru/api/rows/getresultwithcount1'
+    API = 'https://data.mos.ru/api/rows/getresultwithcount'
 
     params = {
         'datasetId': '1189',
