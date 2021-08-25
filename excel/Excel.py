@@ -1,7 +1,5 @@
 import pandas as pd
 
-from models import MedicalOrg
-
 
 class Excel:
     def __init__(self):
@@ -12,6 +10,7 @@ class Excel:
         ogrn = pd.read_excel(name_file)
         list_ogrn = ogrn[column_name].values.tolist()
         return list_ogrn
+
 
     def build(self, name_file: str, list_org):
         org = list_org
@@ -24,4 +23,3 @@ class Excel:
         print(self.df)
         self.df.to_excel(name_file)
 
-# ogrn = pd.read_excel('./ogrn.xlsx', index_col=None)
