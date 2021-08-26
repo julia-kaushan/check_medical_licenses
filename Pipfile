@@ -9,6 +9,8 @@ pandas = "*"
 openpyxl = "*"
 xlsxwriter = "*"
 xlrd = "*"
+flask = "*"
+werkzeug = "*"
 
 [dev-packages]
 
