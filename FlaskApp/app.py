@@ -24,8 +24,12 @@ def upload_file():
             return 'File not found', 400
         file = request.files['file']
         stream = file.stream.read()
+        print(stream)
         excel = Excel(stream)
         list_ogrn = excel.read('ОГРН')
+        if len(list_ogrn) == 0:
+            return 'The file contains no information', 400
+        print(list_ogrn)
         try:
             api = DataMosApi()
             list_org = api.get_all(list_ogrn)
