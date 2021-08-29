@@ -1,5 +1,5 @@
 import requests
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, jsonify
 
 from adapter.DataMosApi import DataMosApi
 from excel.Excel import Excel
@@ -38,6 +38,14 @@ def upload_file():
         except requests.exceptions.ConnectionError as err:
             print('Сервер не доступен', err)
             return 'Internal Server Error', 404
+
+
+@app.route('/info')
+def get_info_org():
+    ogrn = request.args.get('ogrn')
+    info = DataMosApi()
+    info_org = info.get(ogrn)
+    return jsonify(info_org.__dict__)
 
 
 if __name__ == "__main__":
