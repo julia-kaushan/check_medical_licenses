@@ -3,6 +3,7 @@ from flask import Flask, request, send_file, jsonify
 
 from adapter.DataMosApi import DataMosApi
 from excel.Excel import Excel
+from models import MedicalOrg
 
 app = Flask(__name__)
 
@@ -46,6 +47,17 @@ def get_info_org():
     info = DataMosApi()
     info_org = info.get(ogrn)
     return jsonify(info_org.__dict__)
+
+
+@app.route('/info_list', methods=['POST'])
+def get_info_list_org():
+    list_ogrn = request.get_json()['ogrns']
+    if len(list_ogrn) == 0:
+        return 'bad request!', 400
+    api = DataMosApi()
+    list_org = api.get_all(list_ogrn)
+    res = list(map(lambda org: org.__dict__, list_org))
+    return jsonify(res)
 
 
 if __name__ == "__main__":
