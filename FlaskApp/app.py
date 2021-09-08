@@ -1,13 +1,13 @@
 import requests
 import uuid
 from flask import Flask, request, send_file, jsonify
-
+from validate_email import validate_email
 from FlaskApp.utils import chek_apikey
 from adapter.DataMosApi import DataMosApi
 from excel.Excel import Excel
 from accounts.account import Account
 from accounts.SqlConnection import SqlConnetion
-# from accounts.AccountRepository import AccountRepository
+from accounts.AccountRepository import AccountRepository
 
 app = Flask(__name__)
 
@@ -67,17 +67,13 @@ def get_info_list_org():
 @app.route('/register', methods=['POST'])
 def register():
     email = request.get_json()['email']
-    print(email)
-    account = Account()
-    account.email = email
-    account.apikey = str(uuid.uuid4())
-    db = SqlConnetion()
-    add_account = ("INSERT INTO accounts.accounts "
-               "(email, apikey) "
-               "VALUES (%(email)s, (%(apikey)s))")
-    date_account = {'email': account.email, 'apikey': account.apikey}
-    db.execute(add_account, date_account)
-    return jsonify(account.__dict__)
+    if validate_email(email) == True:
+        accountRep = AccountRepository()
+        account = accountRep.register(email)
+        print(email)
+        return jsonify(account.__dict__)
+    else:
+        return 'email is not correct', 401
 
 
 
