@@ -1,9 +1,13 @@
 import requests
+import uuid
 from flask import Flask, request, send_file, jsonify
 
+from FlaskApp.utils import chek_apikey
 from adapter.DataMosApi import DataMosApi
 from excel.Excel import Excel
-from models import MedicalOrg
+from accounts.account import Account
+from accounts.SqlConnection import SqlConnetion
+# from accounts.AccountRepository import AccountRepository
 
 app = Flask(__name__)
 
@@ -50,6 +54,7 @@ def get_info_org():
 
 
 @app.route('/info_list', methods=['POST'])
+@chek_apikey
 def get_info_list_org():
     list_ogrn = request.get_json()['ogrns']
     if len(list_ogrn) == 0:
@@ -58,6 +63,22 @@ def get_info_list_org():
     list_org = api.get_all(list_ogrn)
     res = list(map(lambda org: org.__dict__, list_org))
     return jsonify(res)
+
+@app.route('/register', methods=['POST'])
+def register():
+    email = request.get_json()['email']
+    print(email)
+    account = Account()
+    account.email = email
+    account.apikey = str(uuid.uuid4())
+    db = SqlConnetion()
+    add_account = ("INSERT INTO accounts.accounts "
+               "(email, apikey) "
+               "VALUES (%(email)s, (%(apikey)s))")
+    date_account = {'email': account.email, 'apikey': account.apikey}
+    db.execute(add_account, date_account)
+    return jsonify(account.__dict__)
+
 
 
 if __name__ == "__main__":

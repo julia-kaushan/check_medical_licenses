@@ -11,6 +11,8 @@ xlsxwriter = "*"
 xlrd = "*"
 flask = "*"
 werkzeug = "*"
+mysql = "*"
+mysql-connector-python = "*"
 
 [dev-packages]
 
