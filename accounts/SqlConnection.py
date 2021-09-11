@@ -6,13 +6,14 @@ class SqlConnetion:
     config = {'user': 'root',
               'password': '1234',
               'host': '127.0.0.1',
-              'database': 'accounts',
               'port': 3307,
               'autocommit': True}
 
 
-    def __init__(self):
+    def __init__(self, database='accounts'):
+        self.config['database'] = database
         self.connector = self.connection()
+
 
     def connection(self):
         try:
