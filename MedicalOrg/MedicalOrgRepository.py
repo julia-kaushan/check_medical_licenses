@@ -5,12 +5,11 @@ from models.MedicalOrg import MedicalOrg
 
 class MedicalOrgRepository:
     def __init__(self):
-        self.db = SqlConnetion()
+        self.db = SqlConnetion(database='medical_org')
 
     def xmlparser_tobase(self):
         tree = ElementTree.parse("Base1.xml")
         root = tree.getroot()
-        self.db = SqlConnetion(database='medical_org')
         add_org = ("INSERT INTO medical_org.medical_org "
                    "(name, adress, OGRN, INN, license_num, license_date, termination ) "
                    "VALUES (%(name)s, %(adress)s, %(OGRN)s, %(INN)s, %(license_num)s, %(license_date)s, %(termination)s)")
@@ -25,7 +24,6 @@ class MedicalOrgRepository:
             self.db.execute(add_org, date)
 
     def get_info_org(self, ogrn):
-        self.db = SqlConnetion(database='medical_org')
         query = ("SELECT * FROM medical_org.medical_org WHERE OGRN=%(OGRN)s AND termination=0")
         OGRN = {'OGRN': ogrn}
         result = self.db.execute(query, OGRN)
