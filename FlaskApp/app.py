@@ -1,21 +1,21 @@
 import requests
-import uuid
 from flask import Flask, request, send_file, jsonify
 from validate_email import validate_email
 from FlaskApp.utils import chek_apikey
 from adapter.DataMosApi import DataMosApi
 from excel.Excel import Excel
-from accounts.account import Account
-from accounts.SqlConnection import SqlConnetion
 from accounts.AccountRepository import AccountRepository
+from MedicalOrg.MedicalOrgRepository import MedicalOrgRepository
 
 app = Flask(__name__)
 
 ALLOWED_EXTENSIOINS = set(['xls', 'xlsx'])
 
+
 def allowed_file(filename):
     return '.' in filename and \
-        filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIOINS
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIOINS
+
 
 @app.errorhandler(400)
 def handle_bad_request(error):
@@ -23,6 +23,7 @@ def handle_bad_request(error):
 
 
 @app.route('/', methods=['POST'])
+@chek_apikey
 def upload_file():
     if request.method == 'POST':
         if len(request.files) == 0:
@@ -46,11 +47,17 @@ def upload_file():
 
 
 @app.route('/info')
+@chek_apikey
 def get_info_org():
+    # info = DataMosApi()
+    # info_org = info.get(ogrn)
+    # return jsonify(info_org.__dict__)
     ogrn = request.args.get('ogrn')
-    info = DataMosApi()
-    info_org = info.get(ogrn)
-    return jsonify(info_org.__dict__)
+    if ogrn is None or ogrn == '':
+        return 'bad request!', 400
+    res = MedicalOrgRepository()
+    result = res.get_info_org(ogrn)
+    return jsonify(result.__dict__)
 
 
 @app.route('/info_list', methods=['POST'])
@@ -59,10 +66,13 @@ def get_info_list_org():
     list_ogrn = request.get_json()['ogrns']
     if len(list_ogrn) == 0:
         return 'bad request!', 400
-    api = DataMosApi()
-    list_org = api.get_all(list_ogrn)
-    res = list(map(lambda org: org.__dict__, list_org))
+    # api = DataMosApi()
+    # list_org = api.get_all(list_ogrn)
+    repository = MedicalOrgRepository()
+    result = repository.get_all(list_ogrn)
+    res = list(map(lambda org: org.__dict__, result))
     return jsonify(res)
+
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -76,8 +86,5 @@ def register():
         return 'email is not correct', 401
 
 
-
 if __name__ == "__main__":
     app.run()
-
-
