@@ -24,7 +24,8 @@ class SqlConnetion:
             elif err.errno == errorcode.ER_BAD_DB_ERROR:
                 print("Database does not exist")
             else:
-                print(err)
+                print("Необработнная ошибка", err)
+                raise  Exception("Необработнная ошибка", err) from err
         # else:
         #     self.connector.close()
 
