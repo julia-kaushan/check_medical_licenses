@@ -30,12 +30,10 @@ def upload_file():
             return 'File not found', 400
         file = request.files['file']
         stream = file.stream.read()
-        print(stream)
         excel = Excel(stream)
         list_ogrn = excel.read('ОГРН')
         if len(list_ogrn) == 0:
             return 'The file contains no information', 400
-        print(list_ogrn)
         try:
             api = DataMosApi()
             list_org = api.get_all(list_ogrn)
@@ -77,10 +75,9 @@ def get_info_list_org():
 @app.route('/register', methods=['POST'])
 def register():
     email = request.get_json()['email']
-    if validate_email(email) == True:
-        accountRep = AccountRepository()
-        account = accountRep.register(email)
-        print(email)
+    if validate_email(email):
+        account_rep = AccountRepository()
+        account = account_rep.register(email)
         return jsonify(account.__dict__)
     else:
         return 'email is not correct', 401
